@@ -16,6 +16,8 @@ public class Member {
 
     private String username;
 
+    private String userId;
+
     private ObjectId roomId;
 
     @CreatedDate
