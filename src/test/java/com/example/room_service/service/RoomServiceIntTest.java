@@ -52,8 +52,6 @@ public class RoomServiceIntTest {
 
             Room room = roomRepository.findById(created.getId()).get();
 
-            System.out.println("created ->" + room);
-
             assertEquals(room.getMembers().get(0).getUsername(), client.getUsername());
             assertEquals(room.getMembers().get(0).getUserId(), client.getUserId());
         }
