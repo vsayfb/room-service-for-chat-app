@@ -22,11 +22,11 @@ public class RoomService {
         this.memberService = memberService;
     }
 
-    Optional<Room> getById(ObjectId id){
+    public Optional<Room> getById(ObjectId id){
         return roomRepository.findById(id);
     }
 
-    Room createRoom(Client client,  CreateRoomDto roomDto){
+    public Room createRoom(Client client,  CreateRoomDto roomDto){
         Room room = new Room();
 
         room.setTitle(roomDto.getTitle());
