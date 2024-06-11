@@ -1,11 +1,14 @@
 package com.example.room_service.service;
 
+import com.example.room_service.exception.RoomNotFoundException;
+import com.example.room_service.exception.UserAlreadyInChatException;
 import com.example.room_service.exception.UserNotInChatException;
 import com.example.room_service.external.Client;
 import com.example.room_service.model.Member;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
 import com.example.room_service.repository.RoomRepository;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,7 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
@@ -37,6 +44,33 @@ public class MemberServiceIntTest {
 
     @Nested
     class CreateMember {
+
+        @Test
+        void shouldThrowRoomNotFoundException(){
+            assertThrows(RoomNotFoundException.class, () -> memberService.createMember(new Client(), ObjectId.get()));
+        }
+
+        @Test
+        void shouldThrowUserAlreadyInChatException(){
+
+            Room room = new Room();
+            room.setTitle("Breaking bad");
+
+            Room savedRoom = roomRepository.save(room);
+
+            Client client = new Client();
+            client.setUserId("12417284");
+            client.setUsername("walter");
+
+            Member member = new Member();
+            member.setUsername(client.getUsername());
+            member.setUserId(client.getUserId());
+            member.setRoomId(savedRoom.getId());
+
+            memberRepository.save(member);
+
+            assertThrows(UserAlreadyInChatException.class, () -> memberService.createMember(client, savedRoom.getId()));
+        }
 
 
         @Test

@@ -5,6 +5,7 @@ import com.example.room_service.external.Client;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.RoomRepository;
 import org.bson.types.ObjectId;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,7 +17,7 @@ public class RoomService {
 
     private final MemberService memberService;
 
-    public RoomService(RoomRepository roomRepository, MemberService memberService) {
+    public RoomService(RoomRepository roomRepository, @Lazy MemberService memberService) {
         this.roomRepository = roomRepository;
         this.memberService = memberService;
     }
