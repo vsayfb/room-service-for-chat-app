@@ -31,7 +31,7 @@ public class MemberService {
 
     public void deleteMemberInRoom(Client client, ObjectId roomId) throws UserNotInChatException {
 
-        Optional<Member> optionalMember = memberRepository.findByRoomId(roomId);
+        Optional<Member> optionalMember = memberRepository.findByUserIdAndRoomId(client.getUserId(), roomId);
 
         if(optionalMember.isEmpty()){
             throw  new UserNotInChatException(client.getUsername());

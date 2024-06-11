@@ -68,14 +68,14 @@ public class MemberServiceTest {
 
         @Test
         void shouldThrowErrorIfUserNotInRoom(){
-            when(memberRepository.findByRoomId(any(ObjectId.class))).thenReturn(Optional.empty());
+            when(memberRepository.findByUserIdAndRoomId(any(String.class), any(ObjectId.class))).thenReturn(Optional.empty());
 
            assertThrows(UserNotInChatException.class, () ->  memberService.deleteMemberInRoom(client, ObjectId.get()));
         }
 
         @Test
         void shouldThrowErrorIfUserInRoomButUserIdsNotMatched(){
-            when(memberRepository.findByRoomId(any(ObjectId.class))).thenReturn(Optional.of(member));
+            when(memberRepository.findByUserIdAndRoomId(any(String.class), any(ObjectId.class))).thenReturn(Optional.of(member));
 
             member.setUserId("14890894");
 
@@ -85,7 +85,7 @@ public class MemberServiceTest {
 
         @Test
         void shouldDeleteUserInChat(){
-            when(memberRepository.findByRoomId(any(ObjectId.class))).thenReturn(Optional.of(member));
+            when(memberRepository.findByUserIdAndRoomId(any(String.class), any(ObjectId.class))).thenReturn(Optional.of(member));
 
             memberService.deleteMemberInRoom(client, ObjectId.get());
         }
