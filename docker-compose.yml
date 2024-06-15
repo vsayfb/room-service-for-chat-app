@@ -33,4 +33,4 @@ services:
 
 networks:
   ms:
-    external: ms
+    external: true
