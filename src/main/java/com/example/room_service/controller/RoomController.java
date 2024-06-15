@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-@RequestMapping("rooms")
+@RequestMapping("/rooms")
 @RestController
 public class RoomController {
 
@@ -35,12 +35,12 @@ public class RoomController {
         this.memberService = memberService;
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<SuccessResponse<List<RoomWithoutMembersProjection>>> findAllRooms() {
         return new SuccessResponse<>(roomService.getAllRoomsWithoutMembers(), "All rooms found.", HttpStatus.OK).send();
     }
 
-    @GetMapping("{roomId}")
+    @GetMapping("/{roomId}")
     public ResponseEntity<?> findRoomById(@PathVariable("roomId") ObjectId id) {
 
         Optional<Room> room = roomService.getRoomById(id);
@@ -52,8 +52,7 @@ public class RoomController {
         return new SuccessResponse<>(room.get(), "Room found.", HttpStatus.OK).send();
     }
 
-
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<?> create(@ClientSession Client client, @RequestBody @Valid CreateRoomDto roomDto) {
         Room created = roomService.createRoom(client, roomDto);
 
@@ -66,7 +65,8 @@ public class RoomController {
         return new SuccessResponse<>(data, "Room is created successfully.", HttpStatus.CREATED).send();
     }
 
-    @PostMapping("join/{roomId}")
+
+    @PostMapping("/join/{roomId}")
     public ResponseEntity<?> join(@ClientSession Client client, @PathVariable("roomId") String roomId) {
         try {
             Member member = memberService.createMember(client, new ObjectId(roomId));
@@ -85,7 +85,7 @@ public class RoomController {
         }
     }
 
-    @PostMapping("leave/{roomId}")
+    @PostMapping("/leave/{roomId}")
     public ResponseEntity<?> leave(@ClientSession Client client, @PathVariable("roomId") String roomId) {
         try {
             memberService.deleteMemberInRoom(client, new ObjectId(roomId));

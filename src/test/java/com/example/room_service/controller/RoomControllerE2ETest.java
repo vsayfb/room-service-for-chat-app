@@ -66,7 +66,7 @@ public class RoomControllerE2ETest {
 
             roomRepository.save(room);
 
-            mockMvc.perform(get("/rooms"))
+            mockMvc.perform(get("/rooms/"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.data[0].title", Is.is(roomDto.getTitle())))
@@ -150,7 +150,7 @@ public class RoomControllerE2ETest {
 
             ObjectMapper mapper = new ObjectMapper();
 
-            mockMvc.perform(post("/rooms")
+            mockMvc.perform(post("/rooms/")
                             .content(mapper.writeValueAsString(roomDto)).contentType(MediaType.APPLICATION_JSON)
                             .header("x-jwt-username", client.getUsername())
                             .header("x-jwt-userId", client.getUserId())
