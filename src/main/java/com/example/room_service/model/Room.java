@@ -1,6 +1,8 @@
 package com.example.room_service.model;
 
 import com.example.room_service.validations.CreateRoomRules;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,7 @@ import java.util.List;
 public class Room {
 
     @Id
+    @JsonSerialize(using= ToStringSerializer.class)
     private ObjectId id;
 
     @NotNull
