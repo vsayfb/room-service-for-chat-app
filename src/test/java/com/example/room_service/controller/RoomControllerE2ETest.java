@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.not;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -38,9 +40,96 @@ public class RoomControllerE2ETest {
     private RoomRepository roomRepository;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         memberRepository.deleteAll();
         roomRepository.deleteAll();
+    }
+
+    @Nested
+    class FindAll {
+
+        @Test
+        void shouldReturnAllRooms() throws Exception {
+
+            Client client = new Client();
+
+            client.setUserId(String.valueOf(ObjectId.get()));
+            client.setUsername("walter");
+
+            CreateRoomDto roomDto = new CreateRoomDto();
+
+            roomDto.setTitle("Why breaking bad is the best show ever?");
+
+            Room room = new Room();
+
+            room.setTitle(roomDto.getTitle());
+
+            roomRepository.save(room);
+
+            mockMvc.perform(get("/rooms"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.data[0].title", Is.is(roomDto.getTitle())))
+                    .andExpect(jsonPath("$.data[0].id", any(String.class)))
+                    .andExpect(jsonPath("$.data[0].createdAt", any(String.class)))
+                    .andExpect(jsonPath("$.data[0].members").doesNotExist());
+
+        }
+
+    }
+
+    @Nested
+    class FindById {
+
+        @Test
+        void shouldReturn404() throws Exception {
+
+            mockMvc.perform(get("/rooms/" + ObjectId.get()))
+                    .andExpect(status().isNotFound());
+
+        }
+
+        @Test
+        void shouldReturnRoom() throws Exception {
+
+            Client client = new Client();
+
+            client.setUserId(String.valueOf(ObjectId.get()));
+            client.setUsername("walter");
+
+            CreateRoomDto roomDto = new CreateRoomDto();
+
+            roomDto.setTitle("Why breaking bad is the best show ever?");
+
+            Room room = new Room();
+
+            room.setTitle(roomDto.getTitle());
+
+            Room saved = roomRepository.save(room);
+
+            Member member = new Member();
+
+            member.setRoomId(saved.getId());
+            member.setUsername(client.getUsername());
+            member.setUserId(client.getUserId());
+
+            Member savedMember = memberRepository.save(member);
+
+            mockMvc.perform(get("/rooms/" + saved.getId()))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.data.title", Is.is(roomDto.getTitle())))
+                    .andExpect(jsonPath("$.data.id", any(String.class)))
+                    .andExpect(jsonPath("$.data.createdAt", any(String.class)))
+                    .andExpect(jsonPath("$.data.members").exists())
+                    .andExpect(jsonPath("$.data.members[0].id", Is.is(savedMember.getId().toHexString())))
+                    .andExpect(jsonPath("$.data.members[0].userId", Is.is(savedMember.getUserId())))
+                    .andExpect(jsonPath("$.data.members[0].username", Is.is(savedMember.getUsername())))
+                    .andExpect(jsonPath("$.data.members[0].roomId", Is.is(savedMember.getRoomId().toHexString())));
+
+
+        }
+
     }
 
     @Nested
@@ -77,7 +166,7 @@ public class RoomControllerE2ETest {
     }
 
     @Nested
-    class Join{
+    class Join {
 
         @Test
         void shouldThrowRoomNotFoundException() throws Exception {
@@ -161,7 +250,7 @@ public class RoomControllerE2ETest {
     }
 
     @Nested
-    class Leave{
+    class Leave {
 
         @Test
         void shouldThrowUserNotInChatException() throws Exception {

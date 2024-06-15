@@ -8,6 +8,7 @@ import com.example.room_service.exception.UserNotInChatException;
 import com.example.room_service.external.Client;
 import com.example.room_service.model.Member;
 import com.example.room_service.model.Room;
+import com.example.room_service.repository.projection.RoomWithoutMembersProjection;
 import com.example.room_service.response_entity.ErrorResponse;
 import com.example.room_service.response_entity.SuccessResponse;
 import com.example.room_service.service.MemberService;
@@ -19,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("rooms")
 @RestController
@@ -31,6 +34,24 @@ public class RoomController {
         this.roomService = roomService;
         this.memberService = memberService;
     }
+
+    @GetMapping
+    public ResponseEntity<SuccessResponse<List<RoomWithoutMembersProjection>>> findAllRooms() {
+        return new SuccessResponse<>(roomService.getAllRoomsWithoutMembers(), "All rooms found.", HttpStatus.OK).send();
+    }
+
+    @GetMapping("{roomId}")
+    public ResponseEntity<?> findRoomById(@PathVariable("roomId") ObjectId id) {
+
+        Optional<Room> room = roomService.getRoomById(id);
+
+        if (room.isEmpty()) {
+            return new ErrorResponse("Room not found.", HttpStatus.NOT_FOUND).send();
+        }
+
+        return new SuccessResponse<>(room.get(), "Room found.", HttpStatus.OK).send();
+    }
+
 
     @PostMapping
     public ResponseEntity<?> create(@ClientSession Client client, @RequestBody @Valid CreateRoomDto roomDto) {
