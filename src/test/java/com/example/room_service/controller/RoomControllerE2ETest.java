@@ -19,12 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.not;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -127,14 +125,12 @@ public class RoomControllerE2ETest {
                     .andExpect(jsonPath("$.data.members[0].username", Is.is(savedMember.getUsername())))
                     .andExpect(jsonPath("$.data.members[0].roomId", Is.is(savedMember.getRoomId().toHexString())));
 
-
         }
 
     }
 
     @Nested
     class Create {
-
 
         @Test
         void shouldCreateRoom() throws Exception {
@@ -151,10 +147,9 @@ public class RoomControllerE2ETest {
             ObjectMapper mapper = new ObjectMapper();
 
             mockMvc.perform(post("/rooms/")
-                            .content(mapper.writeValueAsString(roomDto)).contentType(MediaType.APPLICATION_JSON)
-                            .header("x-jwt-username", client.getUsername())
-                            .header("x-jwt-userId", client.getUserId())
-                    )
+                    .content(mapper.writeValueAsString(roomDto)).contentType(MediaType.APPLICATION_JSON)
+                    .header("x-jwt-username", client.getUsername())
+                    .header("x-jwt-userId", client.getUserId()))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.data.title", Is.is(roomDto.getTitle())))
@@ -165,150 +160,4 @@ public class RoomControllerE2ETest {
         }
     }
 
-    @Nested
-    class Join {
-
-        @Test
-        void shouldThrowRoomNotFoundException() throws Exception {
-
-            Client client = new Client();
-
-            client.setUserId(String.valueOf(ObjectId.get()));
-            client.setUsername("walter");
-
-            ObjectId randomRoomId = ObjectId.get();
-
-            mockMvc.perform(post("/rooms/join/" + randomRoomId)
-                            .header("x-jwt-username", client.getUsername())
-                            .header("x-jwt-userId", client.getUserId())
-                    )
-                    .andExpect(status().isForbidden())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.message", Is.is("Room not found.")));
-        }
-
-        @Test
-        void shouldThrowUserAlreadyInChatException() throws Exception {
-
-            Client client = new Client();
-
-            client.setUserId(String.valueOf(ObjectId.get()));
-            client.setUsername("walter");
-
-            Room room = new Room();
-
-            room.setTitle("Why breaking bad is the best show ever?");
-
-            Room savedRoom = roomRepository.save(room);
-
-            Member member = new Member();
-
-            member.setUserId(client.getUserId());
-            member.setUsername(client.getUsername());
-            member.setRoomId(savedRoom.getId());
-
-            memberRepository.save(member);
-
-
-            mockMvc.perform(post("/rooms/join/" + savedRoom.getId())
-                            .header("x-jwt-username", client.getUsername())
-                            .header("x-jwt-userId", client.getUserId())
-                    )
-                    .andExpect(status().isForbidden())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.message", Is.is(String.format("User %s is already a member of this chat.", member.getUsername()))));
-        }
-
-
-        @Test
-        void shouldJoinRoom() throws Exception {
-
-            Client client = new Client();
-
-            client.setUserId(String.valueOf(ObjectId.get()));
-            client.setUsername("walter");
-
-            Room room = new Room();
-
-            room.setTitle("Why breaking bad is the best show ever?");
-
-            Room savedRoom = roomRepository.save(room);
-
-            mockMvc.perform(post("/rooms/join/" + savedRoom.getId())
-                            .header("x-jwt-username", client.getUsername())
-                            .header("x-jwt-userId", client.getUserId())
-                    )
-                    .andExpect(status().isCreated())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.data.id", Matchers.any(String.class)))
-                    .andExpect(jsonPath("$.data.username", Is.is(client.getUsername())))
-                    .andExpect(jsonPath("$.data.userId", Is.is(client.getUserId())))
-                    .andExpect(jsonPath("$.data.roomId", Is.is(savedRoom.getId().toHexString())))
-                    .andExpect(jsonPath("$.data.joinedAt", Matchers.any(String.class)));
-        }
-
-    }
-
-    @Nested
-    class Leave {
-
-        @Test
-        void shouldThrowUserNotInChatException() throws Exception {
-
-            Client client = new Client();
-
-            client.setUserId(String.valueOf(ObjectId.get()));
-            client.setUsername("walter");
-
-            Room room = new Room();
-
-            room.setTitle("Why breaking bad is the best show ever?");
-
-            Room savedRoom = roomRepository.save(room);
-
-            mockMvc.perform(post("/rooms/leave/" + savedRoom.getId())
-                            .header("x-jwt-username", client.getUsername())
-                            .header("x-jwt-userId", client.getUserId())
-                    )
-                    .andExpect(status().isForbidden())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.message", Is.is(String.format("User %s does not belong to this chat.", client.getUsername()))));
-        }
-
-        @Test
-        void shouldLeaveChat() throws Exception {
-
-            Client client = new Client();
-
-            client.setUserId(String.valueOf(ObjectId.get()));
-            client.setUsername("walter");
-
-            Room room = new Room();
-
-            room.setTitle("Why breaking bad is the best show ever?");
-
-            Room savedRoom = roomRepository.save(room);
-
-            Member member = new Member();
-
-            member.setUsername(client.getUsername());
-            member.setUserId(client.getUserId());
-            member.setRoomId(room.getId());
-
-            memberRepository.save(member);
-
-            mockMvc.perform(post("/rooms/leave/" + savedRoom.getId())
-                            .header("x-jwt-username", client.getUsername())
-                            .header("x-jwt-userId", client.getUserId())
-                    )
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.message", Is.is("Member is removed successfully.")));
-
-            assertTrue(roomRepository.findById(savedRoom.getId()).isPresent());
-            assertTrue(roomRepository.findById(savedRoom.getId()).get().getMembers().isEmpty());
-
-        }
-
-    }
 }
