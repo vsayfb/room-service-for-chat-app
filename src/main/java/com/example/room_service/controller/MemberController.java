@@ -18,6 +18,8 @@ import com.example.room_service.model.Member;
 import com.example.room_service.response_entity.ErrorResponse;
 import com.example.room_service.service.MemberService;
 
+import jakarta.validation.Valid;
+
 @RequestMapping("members")
 @RestController
 public class MemberController {
@@ -29,11 +31,11 @@ public class MemberController {
     }
 
     @PostMapping("/new/{roomId}")
-    public ResponseEntity<?> join(@RequestBody NewMemberDto memberDto, @PathVariable("roomId") String roomId) {
+    public ResponseEntity<?> join(@RequestBody @Valid NewMemberDto memberDto, @PathVariable("roomId") ObjectId roomId) {
 
         try {
 
-            Member member = memberService.createMember(memberDto, new ObjectId(roomId));
+            Member member = memberService.createMember(memberDto, roomId);
 
             HashMap<String, Object> data = new HashMap<>();
 
@@ -52,8 +54,8 @@ public class MemberController {
     }
 
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> remove(@PathVariable("memberId") String memberId) {
-        memberService.removeById(new ObjectId(memberId));
+    public ResponseEntity<?> remove(@PathVariable("memberId") ObjectId memberId) {
+        memberService.removeById(memberId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
