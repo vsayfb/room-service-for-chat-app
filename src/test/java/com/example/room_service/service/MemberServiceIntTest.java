@@ -1,6 +1,7 @@
 package com.example.room_service.service;
 
 import com.example.room_service.dto.response.NewMemberDto;
+import com.example.room_service.exception.RoomNotFoundException;
 import com.example.room_service.model.Member;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
@@ -36,6 +37,17 @@ public class MemberServiceIntTest {
     class CreateMember {
 
         @Test
+        void shouldThrowErrorIfRoomNotExists() {
+
+            NewMemberDto member = new NewMemberDto();
+
+            member.setUsername("walter");
+            member.setUserId("123456");
+
+            assertThrows(RoomNotFoundException.class, () -> memberService.createMember(member, ObjectId.get()));
+        }
+
+        @Test
         void shouldCreateMember() {
 
             Room room = new Room();
@@ -51,7 +63,7 @@ public class MemberServiceIntTest {
 
             Member createdMember = memberService.createMember(member, savedRoom.getId());
 
-            assertTrue(memberRepository.findById(new ObjectId(createdMember.getUserId())).isPresent());
+            assertTrue(memberRepository.findById(createdMember.getId()).isPresent());
         }
 
     }
