@@ -14,7 +14,7 @@ FROM base as test
 
 WORKDIR /app
 
-ENTRYPOINT [ "./mvnw", "test"]
+ENTRYPOINT [ "./mvnw", "test", "-Ptest"]
 
 FROM base as dev
 
