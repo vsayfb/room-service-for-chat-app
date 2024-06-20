@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Date;
+
 @SpringBootTest
 public class MemberServiceIntTest {
 
@@ -64,6 +66,39 @@ public class MemberServiceIntTest {
             Member createdMember = memberService.createMember(member, savedRoom.getId());
 
             assertTrue(memberRepository.findById(createdMember.getId()).isPresent());
+        }
+
+        @Test
+        void shouldOnlyUpdateJoinDate() {
+
+            Room room = new Room();
+
+            room.setTitle("Title for Integration test");
+
+            Room savedRoom = roomRepository.save(room);
+
+            NewMemberDto member = new NewMemberDto();
+
+            member.setUsername("walter");
+            member.setUserId("123456");
+
+            Member createdMember = memberService.createMember(member, savedRoom.getId());
+
+            assertTrue(memberRepository.findById(createdMember.getId()).isPresent());
+
+            Date joinedAt = createdMember.getJoinedAt();
+
+            Member updatedMember = memberService.createMember(member, savedRoom.getId());
+
+            Date joinedAt2 = updatedMember.getJoinedAt();
+
+            Member foundMember = memberRepository.findById(createdMember.getId()).get();
+
+            assertEquals(foundMember.getUsername(), createdMember.getUsername());
+            assertEquals(foundMember.getUsername(), updatedMember.getUsername());
+
+            assertNotEquals(joinedAt.getTime(), joinedAt2.getTime());
+            assertNotEquals(joinedAt, joinedAt2);
         }
 
     }

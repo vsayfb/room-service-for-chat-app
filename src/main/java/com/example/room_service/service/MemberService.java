@@ -6,6 +6,7 @@ import com.example.room_service.model.Member;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -28,6 +29,17 @@ public class MemberService {
 
         if (optionalRoom.isEmpty()) {
             throw new RoomNotFoundException();
+        }
+
+        Optional<Member> optionalMember = memberRepository.findByUsername(memberDto.getUsername());
+
+        if (optionalMember.isPresent()) {
+
+            Member member = optionalMember.get();
+
+            member.setJoinedAt(new Date());
+
+            return memberRepository.save(member);
         }
 
         Member member = new Member();
