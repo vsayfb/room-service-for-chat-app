@@ -1,6 +1,7 @@
 package com.example.room_service.service;
 
 import com.example.room_service.dto.request.CreateRoomDto;
+import com.example.room_service.dto.response.NewMemberDto;
 import com.example.room_service.external.Client;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.RoomRepository;
@@ -43,7 +44,12 @@ public class RoomService {
 
         Room savedRoom = roomRepository.save(room);
 
-        memberService.createMember(client, savedRoom.getId());
+        NewMemberDto memberDto = new NewMemberDto();
+
+        memberDto.setUserId(client.getUserId());
+        memberDto.setUsername(client.getUsername());
+
+        memberService.createMember(memberDto, savedRoom.getId());
 
         return savedRoom;
     }
