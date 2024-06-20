@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.room_service.dto.response.NewMemberDto;
+import com.example.room_service.exception.RoomNotFoundException;
 import com.example.room_service.model.Member;
+import com.example.room_service.response_entity.ErrorResponse;
 import com.example.room_service.service.MemberService;
 
 @RequestMapping("members")
@@ -28,17 +30,25 @@ public class MemberController {
 
     @PostMapping("/new/{roomId}")
     public ResponseEntity<?> join(@RequestBody NewMemberDto memberDto, @PathVariable("roomId") String roomId) {
-        Member member = memberService.createMember(memberDto, new ObjectId(roomId));
 
-        HashMap<String, Object> data = new HashMap<>();
+        try {
 
-        data.put("id", member.getId().toHexString());
-        data.put("username", member.getUsername());
-        data.put("userId", member.getUserId());
-        data.put("roomId", member.getRoomId().toHexString());
-        data.put("joinedAt", member.getJoinedAt());
+            Member member = memberService.createMember(memberDto, new ObjectId(roomId));
 
-        return new ResponseEntity<>(data, HttpStatus.CREATED);
+            HashMap<String, Object> data = new HashMap<>();
+
+            data.put("id", member.getId().toHexString());
+            data.put("username", member.getUsername());
+            data.put("userId", member.getUserId());
+            data.put("roomId", member.getRoomId().toHexString());
+            data.put("joinedAt", member.getJoinedAt());
+
+            return new ResponseEntity<>(data, HttpStatus.CREATED);
+
+        } catch (RoomNotFoundException e) {
+            return new ErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN).send();
+        }
+
     }
 
     @DeleteMapping("/{memberId}")
