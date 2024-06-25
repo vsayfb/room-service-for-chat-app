@@ -25,6 +25,10 @@ public class RoomService {
         this.memberService = memberService;
     }
 
+    public Iterable<Room> getAllRooms() {
+        return roomRepository.findAll();
+    }
+
     public List<RoomWithoutMembersProjection> getAllRoomsWithoutMembers() {
         return roomRepository.findAllProjectBy();
     }

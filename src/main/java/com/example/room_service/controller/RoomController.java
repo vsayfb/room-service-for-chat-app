@@ -5,9 +5,9 @@ import com.example.room_service.dto.request.CreateRoomDto;
 import com.example.room_service.dto.response.NewMemberDto;
 import com.example.room_service.external.Client;
 import com.example.room_service.model.Room;
-import com.example.room_service.repository.projection.RoomWithoutMembersProjection;
 import com.example.room_service.response_entity.ErrorResponse;
 import com.example.room_service.response_entity.SuccessResponse;
+import com.example.room_service.service.MemberService;
 import com.example.room_service.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,14 +23,23 @@ import java.util.UUID;
 public class RoomController {
 
     private final RoomService roomService;
+    private final MemberService memberService;
 
-    public RoomController(RoomService roomService) {
+    public RoomController(RoomService roomService, MemberService memberService) {
         this.roomService = roomService;
+        this.memberService = memberService;
     }
 
     @GetMapping("/")
-    public ResponseEntity<SuccessResponse<List<RoomWithoutMembersProjection>>> findAllRooms() {
-        return new SuccessResponse<>(roomService.getAllRoomsWithoutMembers(), "All rooms found.", HttpStatus.OK).send();
+    public ResponseEntity<SuccessResponse<Iterable<Room>>> findAllRooms() {
+
+        Iterable<Room> rooms = roomService.getAllRooms();
+
+        for (Room room : rooms) {
+            room.setMembers(memberService.getFirstNMembersByRoomId(room.getId(), 3));
+        }
+
+        return new SuccessResponse<>(rooms, "All rooms found.", HttpStatus.OK).send();
     }
 
     @GetMapping("/{id}")

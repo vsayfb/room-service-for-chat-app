@@ -71,8 +71,8 @@ public class RoomControllerE2ETest {
                     .andExpect(jsonPath("$.data[0].title", Is.is(roomDto.getTitle())))
                     .andExpect(jsonPath("$.data[0].id", any(String.class)))
                     .andExpect(jsonPath("$.data[0].createdAt", any(String.class)))
-                    .andExpect(jsonPath("$.data[0].members").doesNotExist());
-
+                    .andExpect(jsonPath("$.data[0].members[0].username", Is.is(newMemberDto.getUsername())))
+                    .andExpect(jsonPath("$.data[0].members[0].userId", Is.is(newMemberDto.getUserId())));
         }
 
     }
@@ -135,9 +135,9 @@ public class RoomControllerE2ETest {
             ObjectMapper mapper = new ObjectMapper();
 
             mockMvc.perform(post("/rooms/")
-                    .content(mapper.writeValueAsString(roomDto)).contentType(MediaType.APPLICATION_JSON)
-                    .header("x-jwt-username", client.getUsername())
-                    .header("x-jwt-userId", client.getUserId()))
+                            .content(mapper.writeValueAsString(roomDto)).contentType(MediaType.APPLICATION_JSON)
+                            .header("x-jwt-username", client.getUsername())
+                            .header("x-jwt-userId", client.getUserId()))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.data.title", Is.is(roomDto.getTitle())))
