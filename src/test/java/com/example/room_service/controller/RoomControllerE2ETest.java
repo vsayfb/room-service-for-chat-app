@@ -111,7 +111,7 @@ public class RoomControllerE2ETest {
                     .andExpect(jsonPath("$.data.members").exists())
                     .andExpect(jsonPath("$.data.members[0].userId", Is.is(newMemberDto.getUserId())))
                     .andExpect(jsonPath("$.data.members[0].username", Is.is(newMemberDto.getUsername())))
-                    .andExpect(jsonPath("$.data.members[0].roomId", Is.is(savedRoom.getId())));
+                    .andExpect(jsonPath("$.data.members[0].roomId", Is.is(String.valueOf(savedRoom.getId()))));
 
         }
 

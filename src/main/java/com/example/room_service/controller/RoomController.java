@@ -51,7 +51,11 @@ public class RoomController {
             return new ErrorResponse("Room not found.", HttpStatus.NOT_FOUND).send();
         }
 
-        return new SuccessResponse<>(room.get(), "Room found.", HttpStatus.OK).send();
+        Room found = room.get();
+
+        found.setMembers(memberService.getAllByRoomId(id));
+
+        return new SuccessResponse<>(found, "Room found.", HttpStatus.OK).send();
     }
 
     @PostMapping("/")
