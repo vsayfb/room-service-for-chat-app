@@ -5,10 +5,14 @@ import com.example.room_service.repository.projection.RoomWithoutMembersProjecti
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface RoomRepository extends MongoRepository<Room, ObjectId> {
+@Repository
+public interface RoomRepository extends CrudRepository<Room, UUID> {
 
     List<RoomWithoutMembersProjection> findAllProjectBy();
 }

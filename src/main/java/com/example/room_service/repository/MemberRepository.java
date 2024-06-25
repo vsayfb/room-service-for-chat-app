@@ -9,10 +9,5 @@ import java.util.Optional;
 
 public interface MemberRepository extends MongoRepository<Member, ObjectId> {
 
-    Optional<Member> findByUsername(String username);
-
     Optional<Member> findByRoomId(ObjectId roomId);
-
-    Optional<Member> findByUserIdAndRoomId(String userId, ObjectId roomId);
-
 }
