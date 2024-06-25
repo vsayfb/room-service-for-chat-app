@@ -1,38 +1,30 @@
 package com.example.room_service.model;
 
 import com.example.room_service.validations.CreateRoomRules;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.bson.types.ObjectId;
+import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.ReadOnlyProperty;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.data.annotation.Reference;
+import org.springframework.data.redis.core.RedisHash;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-@Document
-@Getter
-@Setter
+
+@Data
+@RedisHash
 public class Room {
 
     @Id
-    @JsonSerialize(using= ToStringSerializer.class)
-    private ObjectId id;
+    private UUID id;
 
     @NotNull
     @Length(min = CreateRoomRules.MIN_LENGTH, max = CreateRoomRules.MAX_LENGTH)
     private String title;
 
-    @ReadOnlyProperty
-    @DocumentReference(lookup="{'roomId':?#{#self._id} }" , lazy = true)
-    private List<Member> members;
+    @Reference
+    private Set<Member> members = new HashSet<>();
 
     @CreatedDate
     private Date createdAt;

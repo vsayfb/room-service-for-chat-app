@@ -1,22 +1,20 @@
 package com.example.room_service.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.util.Date;
+import java.util.UUID;
 
-@Document
 @Data
+@RedisHash
 public class Member {
     @Id
-    @JsonSerialize(using= ToStringSerializer.class)
-    private ObjectId id;
+    private UUID id;
 
     @NotNull
     private String username;
@@ -24,8 +22,8 @@ public class Member {
     @NotNull
     private String userId;
 
-    @JsonSerialize(using= ToStringSerializer.class)
-    private ObjectId roomId;
+    @Indexed
+    private UUID roomId;
 
     @CreatedDate
     private Date joinedAt;
