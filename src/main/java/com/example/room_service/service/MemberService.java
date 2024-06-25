@@ -60,4 +60,7 @@ public class MemberService {
         this.memberRepository.deleteById(memberId);
     }
 
+    public Set<Member> getAllByRoomId(UUID id) {
+        return memberRepository.findAllByRoomId(id);
+    }
 }
