@@ -32,9 +32,9 @@ public class MemberRepositoryIntTest {
 
         Member savedMember = memberRepository.save(member);
 
-        assertTrue(memberRepository.findByUserId("gus").isPresent());
+        assertTrue(memberRepository.findByUserId("1").isPresent());
 
-        assertEquals(memberRepository.findByUserId("gus").get().getUsername(), "1");
+        assertEquals(memberRepository.findByUserId("1").get().getUserId(), "1");
 
         memberRepository.delete(savedMember);
 

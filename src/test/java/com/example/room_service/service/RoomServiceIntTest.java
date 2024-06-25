@@ -2,7 +2,6 @@ package com.example.room_service.service;
 
 import com.example.room_service.dto.request.CreateRoomDto;
 import com.example.room_service.dto.response.NewMemberDto;
-import com.example.room_service.external.Client;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
 import com.example.room_service.repository.RoomRepository;
@@ -17,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class RoomServiceIntTest {
 
-
     @Autowired
     private RoomService roomService;
 
@@ -28,23 +26,24 @@ public class RoomServiceIntTest {
     private RoomRepository roomRepository;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         memberRepository.deleteAll();
         roomRepository.deleteAll();
     }
 
     @Nested
-    class CreateRoom{
+    class CreateRoom {
 
 
         @Test
-        void shouldCreateRoom(){
+        void shouldCreateRoomAndAddMember() {
 
             NewMemberDto newMemberDto = new NewMemberDto();
             newMemberDto.setUsername("walter");
             newMemberDto.setUserId("1247812");
 
             CreateRoomDto roomDto = new CreateRoomDto();
+
             roomDto.setTitle("Breaking Bad");
 
             Room created = roomService.createRoom(newMemberDto, roomDto);
@@ -53,8 +52,10 @@ public class RoomServiceIntTest {
 
             Room room = roomRepository.findById(created.getId()).get();
 
+            assertEquals(created.getTitle(), room.getTitle());
 
-            assertTrue(room.getMembers().contains("walter"));
+            assertTrue(memberRepository.findByUserId(newMemberDto.getUserId()).isPresent());
+
         }
     }
 }

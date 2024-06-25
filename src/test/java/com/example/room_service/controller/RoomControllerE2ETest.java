@@ -1,11 +1,12 @@
 package com.example.room_service.controller;
 
 import com.example.room_service.dto.request.CreateRoomDto;
+import com.example.room_service.dto.response.NewMemberDto;
 import com.example.room_service.external.Client;
-import com.example.room_service.model.Member;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
 import com.example.room_service.repository.RoomRepository;
+import com.example.room_service.service.RoomService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
@@ -33,6 +34,9 @@ public class RoomControllerE2ETest {
     private MockMvc mockMvc;
 
     @Autowired
+    private RoomService roomService;
+
+    @Autowired
     private MemberRepository memberRepository;
 
     @Autowired
@@ -50,20 +54,16 @@ public class RoomControllerE2ETest {
         @Test
         void shouldReturnAllRooms() throws Exception {
 
-            Client client = new Client();
+            NewMemberDto newMemberDto = new NewMemberDto();
 
-            client.setUserId(UUID.randomUUID().toString());
-            client.setUsername("walter");
+            newMemberDto.setUserId("123456");
+            newMemberDto.setUsername("walter");
 
             CreateRoomDto roomDto = new CreateRoomDto();
 
             roomDto.setTitle("Why breaking bad is the best show ever?");
 
-            Room room = new Room();
-
-            room.setTitle(roomDto.getTitle());
-
-            roomRepository.save(room);
+            roomService.createRoom(newMemberDto, roomDto);
 
             mockMvc.perform(get("/rooms/"))
                     .andExpect(status().isOk())
@@ -91,40 +91,27 @@ public class RoomControllerE2ETest {
         @Test
         void shouldReturnRoom() throws Exception {
 
-            Client client = new Client();
+            NewMemberDto newMemberDto = new NewMemberDto();
 
-            client.setUserId(UUID.randomUUID().toString());
-            client.setUsername("walter");
+            newMemberDto.setUserId("123456");
+            newMemberDto.setUsername("walter");
 
             CreateRoomDto roomDto = new CreateRoomDto();
 
             roomDto.setTitle("Why breaking bad is the best show ever?");
 
-            Room room = new Room();
+            Room savedRoom = roomService.createRoom(newMemberDto, roomDto);
 
-            room.setTitle(roomDto.getTitle());
-
-            Room saved = roomRepository.save(room);
-
-            Member member = new Member();
-
-            member.setRoomId(saved.getId());
-            member.setUsername(client.getUsername());
-            member.setUserId(client.getUserId());
-
-            Member savedMember = memberRepository.save(member);
-
-            mockMvc.perform(get("/rooms/" + saved.getId()))
+            mockMvc.perform(get("/rooms/" + savedRoom.getId()))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.data.title", Is.is(roomDto.getTitle())))
                     .andExpect(jsonPath("$.data.id", any(String.class)))
                     .andExpect(jsonPath("$.data.createdAt", any(String.class)))
                     .andExpect(jsonPath("$.data.members").exists())
-                    .andExpect(jsonPath("$.data.members[0].id", Is.is(savedMember.getId())))
-                    .andExpect(jsonPath("$.data.members[0].userId", Is.is(savedMember.getUserId())))
-                    .andExpect(jsonPath("$.data.members[0].username", Is.is(savedMember.getUsername())))
-                    .andExpect(jsonPath("$.data.members[0].roomId", Is.is(savedMember.getRoomId())));
+                    .andExpect(jsonPath("$.data.members[0].userId", Is.is(newMemberDto.getUserId())))
+                    .andExpect(jsonPath("$.data.members[0].username", Is.is(newMemberDto.getUsername())))
+                    .andExpect(jsonPath("$.data.members[0].roomId", Is.is(savedRoom.getId())));
 
         }
 
@@ -154,8 +141,8 @@ public class RoomControllerE2ETest {
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.data.title", Is.is(roomDto.getTitle())))
-                    .andExpect(jsonPath("$.data.id", Matchers.any(String.class)))
-                    .andExpect(jsonPath("$.data.createdAt", Matchers.any(String.class)))
+                    .andExpect(jsonPath("$.data.id", any(String.class)))
+                    .andExpect(jsonPath("$.data.createdAt", any(String.class)))
                     .andExpect(jsonPath("$.timestamp", Matchers.any(String.class)));
 
         }
