@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +19,7 @@ public class MemberService {
     private final RoomService roomService;
     private final MemberRepository memberRepository;
 
-    public MemberService(RoomService roomService, MemberRepository memberRepository) {
+    public MemberService(@Lazy RoomService roomService, MemberRepository memberRepository) {
         this.roomService = roomService;
         this.memberRepository = memberRepository;
     }
