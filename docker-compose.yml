@@ -10,8 +10,6 @@ services:
     networks:
       - ms
     depends_on:
-      mongo-db:
-        condition: service_healthy
       redis-service:
         condition: service_healthy
 
