@@ -8,6 +8,7 @@ import com.example.room_service.repository.projection.RoomWithoutMembersProjecti
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +41,7 @@ public class RoomService {
         Room room = new Room();
 
         room.setTitle(roomDto.getTitle());
+        room.setCreatedAt(new Date());
 
         Room savedRoom = roomRepository.save(room);
 

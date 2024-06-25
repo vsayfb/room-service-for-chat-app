@@ -48,6 +48,7 @@ public class MemberService {
         member.setUsername(memberDto.getUsername());
         member.setUserId(memberDto.getUserId());
         member.setRoomId(roomId);
+        member.setJoinedAt(new Date());
 
         return memberRepository.save(member);
     }
