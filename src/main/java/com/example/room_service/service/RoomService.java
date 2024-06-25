@@ -2,16 +2,15 @@ package com.example.room_service.service;
 
 import com.example.room_service.dto.request.CreateRoomDto;
 import com.example.room_service.dto.response.NewMemberDto;
-import com.example.room_service.external.Client;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.RoomRepository;
 import com.example.room_service.repository.projection.RoomWithoutMembersProjection;
-import org.bson.types.ObjectId;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RoomService {
@@ -29,27 +28,22 @@ public class RoomService {
         return roomRepository.findAllProjectBy();
     }
 
-    public Optional<Room> getRoomById(ObjectId id) {
+    public Optional<Room> getRoomById(UUID id) {
         return roomRepository.findById(id);
     }
 
-    public Optional<Room> getById(ObjectId id) {
+    public Optional<Room> getById(UUID id) {
         return roomRepository.findById(id);
     }
 
-    public Room createRoom(Client client, CreateRoomDto roomDto) {
+    public Room createRoom(NewMemberDto newMemberDto, CreateRoomDto roomDto) {
         Room room = new Room();
 
         room.setTitle(roomDto.getTitle());
 
         Room savedRoom = roomRepository.save(room);
 
-        NewMemberDto memberDto = new NewMemberDto();
-
-        memberDto.setUserId(client.getUserId());
-        memberDto.setUsername(client.getUsername());
-
-        memberService.createMember(memberDto, savedRoom.getId());
+        memberService.createMember(newMemberDto, savedRoom.getId());
 
         return savedRoom;
     }

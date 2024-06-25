@@ -8,6 +8,7 @@ import com.example.room_service.repository.MemberRepository;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member createMember(NewMemberDto memberDto, ObjectId roomId) throws RoomNotFoundException {
+    public Member createMember(NewMemberDto memberDto, UUID roomId) throws RoomNotFoundException {
 
         Optional<Room> optionalRoom = roomService.getById(roomId);
 
@@ -31,7 +32,7 @@ public class MemberService {
             throw new RoomNotFoundException();
         }
 
-        Optional<Member> optionalMember = memberRepository.findByUsername(memberDto.getUsername());
+        Optional<Member> optionalMember = memberRepository.findByUserId(memberDto.getUserId());
 
         if (optionalMember.isPresent()) {
 
@@ -46,13 +47,12 @@ public class MemberService {
 
         member.setUsername(memberDto.getUsername());
         member.setUserId(memberDto.getUserId());
-
         member.setRoomId(roomId);
 
         return memberRepository.save(member);
     }
 
-    public void removeById(ObjectId memberId) {
+    public void removeById(UUID memberId) {
         this.memberRepository.deleteById(memberId);
     }
 
