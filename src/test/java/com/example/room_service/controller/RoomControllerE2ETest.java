@@ -83,7 +83,7 @@ public class RoomControllerE2ETest {
         @Test
         void shouldReturn404() throws Exception {
 
-            mockMvc.perform(get("/rooms/" + ObjectId.get()))
+            mockMvc.perform(get("/rooms/" + UUID.randomUUID()))
                     .andExpect(status().isNotFound());
 
         }
@@ -93,7 +93,7 @@ public class RoomControllerE2ETest {
 
             Client client = new Client();
 
-            client.setUserId(String.valueOf(ObjectId.get()));
+            client.setUserId(UUID.randomUUID().toString());
             client.setUsername("walter");
 
             CreateRoomDto roomDto = new CreateRoomDto();
@@ -138,7 +138,7 @@ public class RoomControllerE2ETest {
 
             Client client = new Client();
 
-            client.setUserId(String.valueOf(ObjectId.get()));
+            client.setUserId(UUID.randomUUID().toString());
             client.setUsername("walter");
 
             CreateRoomDto roomDto = new CreateRoomDto();

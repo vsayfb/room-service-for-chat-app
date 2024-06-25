@@ -17,6 +17,8 @@ import com.example.room_service.repository.MemberRepository;
 import com.example.room_service.repository.RoomRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -47,14 +49,14 @@ public class MemberControllerE2ETest {
 
             NewMemberDto newMemberDto = new NewMemberDto();
 
-            newMemberDto.setUserId(String.valueOf(ObjectId.get()));
+            newMemberDto.setUserId(UUID.randomUUID().toString());
             newMemberDto.setUsername("walter");
 
             ObjectMapper objectMapper = new ObjectMapper();
 
             String content = objectMapper.writeValueAsString(newMemberDto);
 
-            ObjectId randomRoomId = ObjectId.get();
+            UUID randomRoomId = UUID.randomUUID();
 
             mockMvc.perform(post("/members/new/" + randomRoomId)
                     .content(content)
@@ -75,7 +77,7 @@ public class MemberControllerE2ETest {
 
             NewMemberDto newMemberDto = new NewMemberDto();
 
-            newMemberDto.setUserId(String.valueOf(ObjectId.get()));
+            newMemberDto.setUserId(UUID.randomUUID().toString());
             newMemberDto.setUsername("walter");
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -99,7 +101,7 @@ public class MemberControllerE2ETest {
 
             Member member = new Member();
 
-            member.setUserId(String.valueOf(ObjectId.get()));
+            member.setUserId(UUID.randomUUID().toString());
             member.setUsername("walter");
 
             Member newMember = memberRepository.save(member);
