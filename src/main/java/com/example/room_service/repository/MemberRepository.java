@@ -4,12 +4,14 @@ import com.example.room_service.model.Member;
 import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface MemberRepository extends MongoRepository<Member, ObjectId> {
+public interface MemberRepository extends CrudRepository<Member, UUID> {
 
-    Optional<Member> findByRoomId(ObjectId roomId);
+    Optional<Member> findByRoomId(UUID roomId);
 }
