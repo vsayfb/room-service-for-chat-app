@@ -2,6 +2,7 @@ package com.example.room_service.controller;
 
 import com.example.room_service.annotation.ClientSession;
 import com.example.room_service.dto.request.CreateRoomDto;
+import com.example.room_service.dto.response.NewMemberDto;
 import com.example.room_service.external.Client;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.projection.RoomWithoutMembersProjection;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequestMapping("/rooms")
 @RestController
@@ -33,8 +35,8 @@ public class RoomController {
         return new SuccessResponse<>(roomService.getAllRoomsWithoutMembers(), "All rooms found.", HttpStatus.OK).send();
     }
 
-    @GetMapping("/{roomId}")
-    public ResponseEntity<?> findRoomById(@PathVariable("roomId") ObjectId id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findRoomById(@PathVariable("id") UUID id) {
 
         Optional<Room> room = roomService.getRoomById(id);
 
@@ -47,11 +49,17 @@ public class RoomController {
 
     @PostMapping("/")
     public ResponseEntity<?> create(@ClientSession Client client, @RequestBody @Valid CreateRoomDto roomDto) {
-        Room created = roomService.createRoom(client, roomDto);
+
+        NewMemberDto memberDto = new NewMemberDto();
+
+        memberDto.setUsername(client.getUsername());
+        memberDto.setUserId(client.getUserId());
+
+        Room created = roomService.createRoom(memberDto, roomDto);
 
         HashMap<String, Object> data = new HashMap<>();
 
-        data.put("id", created.getId().toHexString());
+        data.put("id", created.getId());
         data.put("title", created.getTitle());
         data.put("createdAt", created.getCreatedAt());
 

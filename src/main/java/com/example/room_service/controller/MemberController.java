@@ -1,6 +1,7 @@
 package com.example.room_service.controller;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class MemberController {
     }
 
     @PostMapping("/new/{roomId}")
-    public ResponseEntity<?> join(@RequestBody @Valid NewMemberDto memberDto, @PathVariable("roomId") ObjectId roomId) {
+    public ResponseEntity<?> join(@RequestBody @Valid NewMemberDto memberDto, @PathVariable("roomId") UUID roomId) {
 
         try {
 
@@ -39,10 +40,10 @@ public class MemberController {
 
             HashMap<String, Object> data = new HashMap<>();
 
-            data.put("id", member.getId().toHexString());
+            data.put("id", member.getId());
             data.put("username", member.getUsername());
             data.put("userId", member.getUserId());
-            data.put("roomId", member.getRoomId().toHexString());
+            data.put("roomId", member.getRoomId());
             data.put("joinedAt", member.getJoinedAt());
 
             return new ResponseEntity<>(data, HttpStatus.CREATED);
@@ -53,8 +54,8 @@ public class MemberController {
 
     }
 
-    @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> remove(@PathVariable("memberId") ObjectId memberId) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> remove(@PathVariable("id") UUID memberId) {
         memberService.removeById(memberId);
 
         return new ResponseEntity<>(HttpStatus.OK);
