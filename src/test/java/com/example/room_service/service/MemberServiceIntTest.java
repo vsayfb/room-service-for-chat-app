@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Date;
+import java.util.UUID;
 
 @SpringBootTest
 public class MemberServiceIntTest {
@@ -46,7 +47,7 @@ public class MemberServiceIntTest {
             member.setUsername("walter");
             member.setUserId("123456");
 
-            assertThrows(RoomNotFoundException.class, () -> memberService.createMember(member, ObjectId.get()));
+            assertThrows(RoomNotFoundException.class, () -> memberService.createMember(member, UUID.randomUUID()));
         }
 
         @Test

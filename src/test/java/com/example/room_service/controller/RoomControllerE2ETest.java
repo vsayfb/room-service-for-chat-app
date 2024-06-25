@@ -19,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -51,7 +53,7 @@ public class RoomControllerE2ETest {
 
             Client client = new Client();
 
-            client.setUserId(String.valueOf(ObjectId.get()));
+            client.setUserId(UUID.randomUUID().toString());
             client.setUsername("walter");
 
             CreateRoomDto roomDto = new CreateRoomDto();
@@ -120,10 +122,10 @@ public class RoomControllerE2ETest {
                     .andExpect(jsonPath("$.data.id", any(String.class)))
                     .andExpect(jsonPath("$.data.createdAt", any(String.class)))
                     .andExpect(jsonPath("$.data.members").exists())
-                    .andExpect(jsonPath("$.data.members[0].id", Is.is(savedMember.getId().toHexString())))
+                    .andExpect(jsonPath("$.data.members[0].id", Is.is(savedMember.getId())))
                     .andExpect(jsonPath("$.data.members[0].userId", Is.is(savedMember.getUserId())))
                     .andExpect(jsonPath("$.data.members[0].username", Is.is(savedMember.getUsername())))
-                    .andExpect(jsonPath("$.data.members[0].roomId", Is.is(savedMember.getRoomId().toHexString())));
+                    .andExpect(jsonPath("$.data.members[0].roomId", Is.is(savedMember.getRoomId())));
 
         }
 

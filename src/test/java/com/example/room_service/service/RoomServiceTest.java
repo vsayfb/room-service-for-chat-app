@@ -1,16 +1,17 @@
 package com.example.room_service.service;
 
 import com.example.room_service.dto.request.CreateRoomDto;
-import com.example.room_service.external.Client;
+import com.example.room_service.dto.response.NewMemberDto;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.RoomRepository;
-import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -21,9 +22,6 @@ public class RoomServiceTest {
 
     @Mock
     private  RoomRepository roomRepository;
-
-    @Mock
-    private  MemberService memberService;
 
     @InjectMocks
     private RoomService roomService;
@@ -36,22 +34,22 @@ public class RoomServiceTest {
         @Test
         void shouldCreateRoom(){
 
-            Client client = new Client();
-            client.setUsername("walter");
-            client.setUserId("1247812");
+            NewMemberDto newMemberDto = new NewMemberDto();
+            newMemberDto.setUsername("walter");
+            newMemberDto.setUserId("1247812");
 
             CreateRoomDto roomDto = new CreateRoomDto();
             roomDto.setTitle("Breaking Bad");
 
             Room room = new Room();
             room.setTitle(roomDto.getTitle());
-            room.setId(ObjectId.get());
+            room.setId(UUID.randomUUID());
 
             when(roomRepository.save(any(Room.class))).thenReturn(room);
 
-            Room created = roomService.createRoom(client, roomDto);
+            Room created = roomService.createRoom(newMemberDto, roomDto);
 
-            assertInstanceOf(ObjectId.class, created.getId());
+            assertInstanceOf(UUID.class, created.getId());
             assertEquals(created.getTitle(), room.getTitle());
         }
     }

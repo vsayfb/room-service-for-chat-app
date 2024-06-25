@@ -28,15 +28,15 @@ public class MemberRepositoryIntTest {
 
         Member member = new Member();
 
-        member.setUsername("gus");
+        member.setUserId("1");
 
         Member savedMember = memberRepository.save(member);
 
-        assertEquals(memberRepository.findByUsername("gus").get().getUsername(), "gus");
+        assertEquals(memberRepository.findByUserId("gus").get().getUsername(), "1");
 
         memberRepository.delete(savedMember);
 
-        assertTrue(memberRepository.findByUsername("gus").isEmpty());
+        assertTrue(memberRepository.findByUserId("1").isEmpty());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.example.room_service.service;
 
 import com.example.room_service.dto.request.CreateRoomDto;
+import com.example.room_service.dto.response.NewMemberDto;
 import com.example.room_service.external.Client;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
@@ -39,21 +40,21 @@ public class RoomServiceIntTest {
         @Test
         void shouldCreateRoom(){
 
-            Client client = new Client();
-            client.setUsername("walter");
-            client.setUserId("1247812");
+            NewMemberDto newMemberDto = new NewMemberDto();
+            newMemberDto.setUsername("walter");
+            newMemberDto.setUserId("1247812");
 
             CreateRoomDto roomDto = new CreateRoomDto();
             roomDto.setTitle("Breaking Bad");
 
-            Room created = roomService.createRoom(client, roomDto);
+            Room created = roomService.createRoom(newMemberDto, roomDto);
 
             assertTrue(roomRepository.findById(created.getId()).isPresent());
 
             Room room = roomRepository.findById(created.getId()).get();
 
-            assertEquals(room.getMembers().get(0).getUsername(), client.getUsername());
-            assertEquals(room.getMembers().get(0).getUserId(), client.getUserId());
+
+            assertTrue(room.getMembers().contains("walter"));
         }
     }
 }
