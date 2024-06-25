@@ -3,7 +3,6 @@ package com.example.room_service.controller;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

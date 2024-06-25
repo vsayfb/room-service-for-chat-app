@@ -10,7 +10,6 @@ import com.example.room_service.response_entity.ErrorResponse;
 import com.example.room_service.response_entity.SuccessResponse;
 import com.example.room_service.service.RoomService;
 import jakarta.validation.Valid;
-import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

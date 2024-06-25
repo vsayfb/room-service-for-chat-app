@@ -7,7 +7,6 @@ import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
 import com.example.room_service.repository.RoomRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.bson.types.ObjectId;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;

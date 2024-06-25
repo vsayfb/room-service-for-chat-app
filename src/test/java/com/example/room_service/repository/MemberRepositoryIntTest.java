@@ -5,11 +5,11 @@ import com.example.room_service.model.Room;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataMongoTest
+@DataRedisTest
 public class MemberRepositoryIntTest {
 
     @Autowired
@@ -24,13 +24,15 @@ public class MemberRepositoryIntTest {
     }
 
     @Test
-    void testFindByUsername(){
+    void testFindByUserId(){
 
         Member member = new Member();
 
         member.setUserId("1");
 
         Member savedMember = memberRepository.save(member);
+
+        assertTrue(memberRepository.findByUserId("gus").isPresent());
 
         assertEquals(memberRepository.findByUserId("gus").get().getUsername(), "1");
 

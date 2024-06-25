@@ -1,6 +1,5 @@
 package com.example.room_service.controller;
 
-import org.bson.types.ObjectId;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

@@ -6,7 +6,6 @@ import com.example.room_service.model.Member;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
 import com.example.room_service.repository.RoomRepository;
-import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
