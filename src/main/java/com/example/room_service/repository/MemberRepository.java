@@ -14,4 +14,6 @@ import java.util.UUID;
 public interface MemberRepository extends CrudRepository<Member, UUID> {
 
     Optional<Member> findByRoomId(UUID roomId);
+
+    Optional<Member> findByUserId(String userId);
 }
