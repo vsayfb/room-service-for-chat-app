@@ -12,6 +12,16 @@ services:
     depends_on:
       mongo-db:
         condition: service_healthy
+      redis-service:
+        condition: service_healthy
+
+  redis-service:
+    image: redis
+    container_name: redis-server
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    networks:
+      - ms
 
   mongo-db:
     container_name: mongo-docker
