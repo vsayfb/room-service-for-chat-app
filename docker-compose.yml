@@ -19,27 +19,9 @@ services:
     image: redis
     container_name: redis-server
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
     networks:
       - ms
-
-  mongo-db:
-    container_name: mongo-docker
-    image: mongo:4.4.6
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=user
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    networks:
-      - ms
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          'echo ''db.runCommand("ping").ok'' | mongo --username user --password password --authenticationDatabase admin --quiet',
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 networks:
   ms:
