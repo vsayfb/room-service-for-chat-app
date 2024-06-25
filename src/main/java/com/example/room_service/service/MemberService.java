@@ -6,11 +6,10 @@ import com.example.room_service.model.Member;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
 
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +21,10 @@ public class MemberService {
     public MemberService(@Lazy RoomService roomService, MemberRepository memberRepository) {
         this.roomService = roomService;
         this.memberRepository = memberRepository;
+    }
+
+    public Set<Member> getFirstNMembersByRoomId(UUID roomId, int number) {
+        return memberRepository.findByRoomId(roomId, Pageable.ofSize(number)).toSet();
     }
 
     public Member createMember(NewMemberDto memberDto, UUID roomId) throws RoomNotFoundException {

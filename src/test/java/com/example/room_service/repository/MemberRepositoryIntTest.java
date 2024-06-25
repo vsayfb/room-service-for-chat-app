@@ -6,6 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,12 +22,30 @@ public class MemberRepositoryIntTest {
     private RoomRepository roomRepository;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         memberRepository.deleteAll();
     }
 
     @Test
-    void testFindByUserId(){
+    void testFindTop3ByRoomId() {
+
+        UUID roomId = UUID.randomUUID();
+
+        for (int i = 0; i < 5; i++) {
+            Member member = new Member();
+
+            member.setUserId(i + "");
+            member.setRoomId(roomId);
+
+            memberRepository.save(member);
+        }
+
+        assertEquals(3, memberRepository.findByRoomId(roomId, Pageable.ofSize(3)).getContent().size());
+    }
+
+
+    @Test
+    void testFindByUserId() {
 
         Member member = new Member();
 
@@ -42,7 +63,7 @@ public class MemberRepositoryIntTest {
     }
 
     @Test
-    void testFindByRoomId(){
+    void testFindByRoomId() {
 
         Room room = new Room();
 
