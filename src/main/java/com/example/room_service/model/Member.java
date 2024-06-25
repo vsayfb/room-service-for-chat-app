@@ -20,6 +20,7 @@ public class Member {
     private String username;
 
     @NotNull
+    @Indexed
     private String userId;
 
     @Indexed
