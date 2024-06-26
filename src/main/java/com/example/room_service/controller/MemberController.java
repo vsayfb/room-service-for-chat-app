@@ -20,7 +20,7 @@ import com.example.room_service.service.MemberService;
 
 import jakarta.validation.Valid;
 
-@RequestMapping("members")
+@RequestMapping("/members")
 @RestController
 public class MemberController {
 
