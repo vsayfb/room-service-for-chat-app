@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: room-ms
+spec:
+  selector:
+    matchLabels:
+      app: room-ms
+  template:
+    metadata:
+      labels:
+        app: room-ms
+    spec:
+      initContainers:
+        - name: wait-for-redis
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -zv redis-service 6379; do echo waiting for redis; sleep 2; done;",
+            ]
+
+      containers:
+        - name: room-ms
+          image: room-ms:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "600Mi"
+            requests:
+              memory: "300Mi"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: redis-root-user
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: redis-root-password
+            - name: REDIS_HOST
+              value: redis-service
+            - name: REDIS_PORT
+              value: "6379"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: room-service
+spec:
+  selector:
+    app: room-ms
+  ports:
+    - port: 8080
+      targetPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:latest
+          resources:
+            limits:
+              memory: "600Mi"
+            requests:
+              memory: "300Mi"
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-config
+              mountPath: /usr/local/etc/redis/redis.conf
+              subPath: redis.conf
+          env:
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: redis-root-user
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: redis-root-password
+          command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+data:
+  redis.conf: |
+    requirepass awesome-user
+
+    user awesome-user on >strong-password ~* +@all
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-secrets
+data:
+  redis-root-user: YXdlc29tZS11c2Vy
+  redis-root-password: c3Ryb25nLXBhc3N3b3Jk
