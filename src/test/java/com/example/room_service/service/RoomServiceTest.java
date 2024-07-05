@@ -21,18 +21,19 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RoomServiceTest {
 
     @Mock
-    private  RoomRepository roomRepository;
+    private RoomRepository roomRepository;
+
+    @Mock
+    private MemberService memberService;
 
     @InjectMocks
     private RoomService roomService;
 
-
     @Nested
-    class CreateRoom{
-
+    class CreateRoom {
 
         @Test
-        void shouldCreateRoom(){
+        void shouldCreateRoom() {
 
             NewMemberDto newMemberDto = new NewMemberDto();
             newMemberDto.setUsername("walter");
