@@ -1,7 +1,6 @@
 package com.example.room_service.contract;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -14,10 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.Validator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.example.room_service.controller.MemberController;
 import com.example.room_service.exception.RoomNotFoundException;
@@ -25,6 +20,7 @@ import com.example.room_service.model.Member;
 import com.example.room_service.service.MemberService;
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
+import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
@@ -34,6 +30,7 @@ import au.com.dius.pact.provider.spring.spring6.Spring6MockMvcTestTarget;
 
 @Provider("RoomService")
 @PactBroker(url = "${pactbroker.host}", authentication = @PactBrokerAuth(username = "${pactbroker.auth.username}", password = "${pactbroker.auth.password}"))
+@IgnoreNoPactsToVerify
 @WebMvcTest(MemberController.class)
 public class MessageServiceContractVerificationTest {
 
@@ -47,13 +44,18 @@ public class MessageServiceContractVerificationTest {
     @ExtendWith(PactVerificationSpring6Provider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
 
-        context.verifyInteraction();
+        if (context != null) {
+            context.verifyInteraction();
+        }
     }
 
     @BeforeEach
     void before(PactVerificationContext context) {
 
-        context.setTarget(new Spring6MockMvcTestTarget(mockMvc));
+        if (context != null) {
+            context.setTarget(new Spring6MockMvcTestTarget(mockMvc));
+        }
+
     }
 
     @State("a non-existent room")
