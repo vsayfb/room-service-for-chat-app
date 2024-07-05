@@ -13,7 +13,7 @@ FROM base AS test
 
 WORKDIR /app
 
-ENTRYPOINT [ "./mvnw", "test" ]
+ENTRYPOINT [ "./mvnw", "test","-Dspring.profiles.active=test" ]
 
 FROM base AS dev
 
