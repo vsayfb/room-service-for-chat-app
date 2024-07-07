@@ -35,7 +35,7 @@ public class MemberService {
             throw new RoomNotFoundException();
         }
 
-        Optional<Member> optionalMember = memberRepository.findByUserId(memberDto.getUserId());
+        Optional<Member> optionalMember = memberRepository.findByUserIdAndRoomId(memberDto.getUserId(), roomId);
 
         if (optionalMember.isPresent()) {
 

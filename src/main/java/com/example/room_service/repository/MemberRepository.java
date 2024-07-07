@@ -7,7 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -22,4 +21,6 @@ public interface MemberRepository extends CrudRepository<Member, UUID>, PagingAn
     Optional<Member> findByRoomId(UUID roomId);
 
     Optional<Member> findByUserId(String userId);
+
+    Optional<Member> findByUserIdAndRoomId(String userId, UUID roomId);
 }
