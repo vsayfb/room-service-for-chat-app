@@ -86,6 +86,32 @@ public class MemberService {
         this.memberRepository.deleteById(memberId);
     }
 
+    public void removeByUserIdAndRoomIdAndSessionId(String userId, UUID roomId, String sessionId) {
+
+        Optional<Member> optionalMember = memberRepository.findByUserIdAndRoomId(userId, roomId);
+
+        if (optionalMember.isEmpty()) {
+            return;
+        }
+
+        Member member = optionalMember.get();
+
+        if (member.getSessionIds().size() > 1) {
+
+            member.getSessionIds().remove(sessionId);
+
+            memberRepository.save(member);
+
+            return;
+        }
+
+        this.memberRepository.deleteById(optionalMember.get().getId());
+    }
+
+    public Optional<Member> getByUserIdAndRoomId(String userId, UUID roomId) {
+        return memberRepository.findByUserIdAndRoomId(userId, roomId);
+    }
+
     public Set<Member> getAllByRoomId(UUID id) {
         return memberRepository.findAllByRoomId(id);
     }

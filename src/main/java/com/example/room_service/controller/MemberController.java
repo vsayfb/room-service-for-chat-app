@@ -1,16 +1,18 @@
 package com.example.room_service.controller;
 
-import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.room_service.dto.response.NewMemberDto;
 import com.example.room_service.exception.RoomNotFoundException;
@@ -30,7 +32,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/new/{roomId}")
+    @PostMapping("/room/{roomId}")
     public ResponseEntity<?> join(@RequestBody @Valid NewMemberDto memberDto, @PathVariable("roomId") UUID roomId) {
 
         try {
@@ -45,11 +47,36 @@ public class MemberController {
 
     }
 
-    @DeleteMapping("/{id}/{sessionId}")
+    @DeleteMapping("/{id}/session/{sessionId}")
     public ResponseEntity<?> remove(@PathVariable("id") UUID memberId, @PathVariable("sessionId") String sessionId) {
         memberService.removeById(memberId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user/{userId}/room/{roomId}/session/{sessionId}")
+    public ResponseEntity<?> removeByUserId(
+            @PathVariable("userId") String userId,
+            @PathVariable("roomId") UUID roomId,
+            @PathVariable("sessionId") String sessionId) {
+
+        memberService.removeByUserIdAndRoomIdAndSessionId(userId, roomId, sessionId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}/room/{roomId}")
+    public ResponseEntity<?> findMemberByUserIdAndRoomId(
+            @PathVariable("userId") String userId,
+            @PathVariable("roomId") UUID roomId) {
+
+        Optional<Member> optionalMember = memberService.getByUserIdAndRoomId(userId, roomId);
+
+        if (optionalMember.isPresent()) {
+            return new ResponseEntity<>(optionalMember.get(), HttpStatus.OK);
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
 }

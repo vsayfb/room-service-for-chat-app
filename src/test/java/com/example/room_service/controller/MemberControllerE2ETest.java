@@ -61,7 +61,7 @@ public class MemberControllerE2ETest {
 
             UUID randomRoomId = UUID.randomUUID();
 
-            mockMvc.perform(post("/members/new/" + randomRoomId)
+            mockMvc.perform(post("/members/room/" + randomRoomId)
                     .content(content)
                     .header("content-type", MediaType.APPLICATION_JSON_VALUE))
                     .andExpect(status().isForbidden())
@@ -88,7 +88,7 @@ public class MemberControllerE2ETest {
 
             String content = objectMapper.writeValueAsString(newMemberDto);
 
-            mockMvc.perform(post("/members/new/" + newRoom.getId())
+            mockMvc.perform(post("/members/room/" + newRoom.getId())
                     .content(content)
                     .header("content-type", MediaType.APPLICATION_JSON_VALUE))
                     .andExpect(status().isCreated())
@@ -116,7 +116,7 @@ public class MemberControllerE2ETest {
 
             Member newMember = memberRepository.save(member);
 
-            mockMvc.perform(delete("/members/" + newMember.getId() + "/" + sessionId))
+            mockMvc.perform(delete("/members/" + newMember.getId() + "/session/" + sessionId))
                     .andExpect(status().isOk());
         }
 

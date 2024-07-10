@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -78,10 +79,41 @@ public class MessageServiceContractVerificationTest {
         member.setRoomId(UUID.randomUUID());
         member.setUsername("walter");
         member.setJoinedAt(new Date());
+        member.addSessionId("1");
         member.setUserId(UUID.randomUUID().toString());
 
         when(memberService.createMember(any(), any())).thenReturn(member);
 
+    }
+
+    @State("an existent member by user id and room id")
+    void existentMemberByUserIdAndRoomId() {
+
+        Member member = new Member();
+
+        member.setId(UUID.randomUUID());
+        member.setRoomId(UUID.randomUUID());
+        member.setUsername("walter");
+        member.addSessionId("1");
+        member.setJoinedAt(new Date());
+        member.setUserId(UUID.randomUUID().toString());
+
+        when(memberService.getByUserIdAndRoomId(any(), any())).thenReturn(Optional.of(member));
+    }
+
+    @State("an existent member by user id")
+    void existentMemberByUserId() {
+
+        Member member = new Member();
+
+        member.setId(UUID.randomUUID());
+        member.setRoomId(UUID.randomUUID());
+        member.setUsername("walter");
+        member.addSessionId("1");
+        member.setJoinedAt(new Date());
+        member.setUserId(UUID.randomUUID().toString());
+
+        when(memberService.createMember(any(), any())).thenReturn(member);
     }
 
 }
