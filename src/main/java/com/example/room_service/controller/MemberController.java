@@ -37,15 +37,7 @@ public class MemberController {
 
             Member member = memberService.createMember(memberDto, roomId);
 
-            HashMap<String, Object> data = new HashMap<>();
-
-            data.put("id", member.getId());
-            data.put("username", member.getUsername());
-            data.put("userId", member.getUserId());
-            data.put("roomId", member.getRoomId());
-            data.put("joinedAt", member.getJoinedAt());
-
-            return new ResponseEntity<>(data, HttpStatus.CREATED);
+            return new ResponseEntity<>(member, HttpStatus.CREATED);
 
         } catch (RoomNotFoundException e) {
             return new ErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN).send();
@@ -53,9 +45,9 @@ public class MemberController {
 
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable("id") UUID memberId) {
-        memberService.removeById(memberId);
+    @DeleteMapping("/{id}/{sessionId}")
+    public ResponseEntity<?> remove(@PathVariable("id") UUID memberId, @PathVariable("sessionId") String sessionId) {
+        memberService.removeById(memberId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

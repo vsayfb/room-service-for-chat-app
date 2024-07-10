@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.UUID;
 
 @Data
@@ -26,6 +27,16 @@ public class Member {
     @Indexed
     private UUID roomId;
 
+    private HashSet<String> sessionIds = new HashSet<>();
+
     @CreatedDate
     private Date joinedAt;
+
+    public void addSessionId(String sessionId) {
+        sessionIds.add(sessionId);
+    }
+
+    public void removeSessionId(String sessionId) {
+        sessionIds.remove(sessionId);
+    }
 }

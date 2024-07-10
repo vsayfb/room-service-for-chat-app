@@ -1,6 +1,7 @@
 package com.example.room_service.controller;
 
 import org.hamcrest.core.Is;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ public class MemberControllerE2ETest {
     private RoomRepository roomRepository;
 
     @BeforeEach
+    @AfterEach
     void beforeEach() {
         memberRepository.deleteAll();
         roomRepository.deleteAll();
@@ -51,6 +53,7 @@ public class MemberControllerE2ETest {
 
             newMemberDto.setUserId(UUID.randomUUID().toString());
             newMemberDto.setUsername("walter");
+            newMemberDto.setSessionId("1");
 
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -79,6 +82,7 @@ public class MemberControllerE2ETest {
 
             newMemberDto.setUserId(UUID.randomUUID().toString());
             newMemberDto.setUsername("walter");
+            newMemberDto.setSessionId("1");
 
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -88,6 +92,9 @@ public class MemberControllerE2ETest {
                     .content(content)
                     .header("content-type", MediaType.APPLICATION_JSON_VALUE))
                     .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.userId", Is.is(newMemberDto.getUserId())))
+                    .andExpect(jsonPath("$.username", Is.is(newMemberDto.getUsername())))
+                    .andExpect(jsonPath("$.sessionIds[0]", Is.is(newMemberDto.getSessionId())))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
@@ -101,12 +108,15 @@ public class MemberControllerE2ETest {
 
             Member member = new Member();
 
+            String sessionId = UUID.randomUUID().toString();
+
             member.setUserId(UUID.randomUUID().toString());
+            member.addSessionId(sessionId);
             member.setUsername("walter");
 
             Member newMember = memberRepository.save(member);
 
-            mockMvc.perform(delete("/members/" + newMember.getId()))
+            mockMvc.perform(delete("/members/" + newMember.getId() + "/" + sessionId))
                     .andExpect(status().isOk());
         }
 

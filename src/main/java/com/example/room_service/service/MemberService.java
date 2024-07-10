@@ -2,6 +2,7 @@ package com.example.room_service.service;
 
 import com.example.room_service.dto.response.NewMemberDto;
 import com.example.room_service.exception.RoomNotFoundException;
+import com.example.room_service.exception.UserAlreadyInChatException;
 import com.example.room_service.model.Member;
 import com.example.room_service.model.Room;
 import com.example.room_service.repository.MemberRepository;
@@ -41,6 +42,12 @@ public class MemberService {
 
             Member member = optionalMember.get();
 
+            if (member.getSessionIds().contains(memberDto.getSessionId())) {
+                throw new UserAlreadyInChatException(memberDto.getUsername());
+            }
+
+            member.addSessionId(memberDto.getSessionId());
+
             member.setJoinedAt(new Date());
 
             return memberRepository.save(member);
@@ -51,12 +58,31 @@ public class MemberService {
         member.setUsername(memberDto.getUsername());
         member.setUserId(memberDto.getUserId());
         member.setRoomId(roomId);
+        member.addSessionId(memberDto.getSessionId());
         member.setJoinedAt(new Date());
 
         return memberRepository.save(member);
     }
 
-    public void removeById(UUID memberId) {
+    public void removeById(UUID memberId, String sessionId) {
+
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+
+        if (optionalMember.isEmpty()) {
+            return;
+        }
+
+        Member member = optionalMember.get();
+
+        if (member.getSessionIds().size() > 1) {
+
+            member.getSessionIds().remove(sessionId);
+
+            memberRepository.save(member);
+
+            return;
+        }
+
         this.memberRepository.deleteById(memberId);
     }
 
