@@ -20,10 +20,12 @@ import com.example.room_service.model.Member;
 import com.example.room_service.response_entity.ErrorResponse;
 import com.example.room_service.service.MemberService;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 
 @RequestMapping("/members")
 @RestController
+@Hidden
 public class MemberController {
 
     private final MemberService memberService;
